@@ -23,7 +23,7 @@ let uniqueNumbers = (howMany, minInclusive, maxInclusive) => {
     minInclusive >= maxInclusive ||
     howMany > maxInclusive - minInclusive + 1
   ) {
-    console.error("Bad function parameter values");
+    console.error("Bad input");
     return [];
   }
 

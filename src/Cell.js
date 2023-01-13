@@ -1,6 +1,6 @@
 import React from "react";
 import { FlagOutlined, AlertOutlined } from "@ant-design/icons";
-import { CELL_TYPES } from "./App";
+import { CELL_TYPES } from "./useMinesweeper";
 
 export default function Cell({
   cell,

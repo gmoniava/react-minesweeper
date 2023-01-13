@@ -2,11 +2,6 @@ import React from "react";
 import { useImmer } from "use-immer";
 import { v4 as uuidv4 } from "uuid";
 
-const BOARD_WIDTH = 10;
-const BOARD_HEIGHT = 10;
-const NR_OF_FLAGS = 10;
-const NR_OF_MINES = 10;
-
 export const CELL_TYPES = {
   EMPTY: 0,
   MINE: 1,
@@ -35,7 +30,12 @@ let uniqueNumbers = (howMany, minInclusive, maxInclusive) => {
   return arr;
 };
 
-export default function useMinesweeper(props) {
+export default function useMinesweeper({
+  initialBoardWidth = 10,
+  initialBoardHeight = 10,
+  initialNrOfFlags = 10,
+  initialNrOfMines = 10,
+} = {}) {
   let getCellNeighbors = (row, col, board) => {
     let neighborOffsets = [
       [0, 1],
@@ -98,7 +98,7 @@ export default function useMinesweeper(props) {
     };
 
     let board = createBoardWithEmptyCells();
-    let minesCoordinates = insertMinesOnBoard(board, NR_OF_MINES);
+    let minesCoordinates = insertMinesOnBoard(board, initialNrOfMines);
     putNumbersAroundMines(board, minesCoordinates);
     return board;
   };
@@ -117,7 +117,7 @@ export default function useMinesweeper(props) {
   };
 
   let [gameBoard, setGameBoard] = useImmer(() =>
-    initializeGameBoard(BOARD_WIDTH, BOARD_HEIGHT)
+    initializeGameBoard(initialBoardWidth, initialBoardHeight)
   );
   let [gameOver, setGameOver] = React.useState(false);
 
@@ -135,7 +135,7 @@ export default function useMinesweeper(props) {
 
     if (clickedItem.revealed || gameOver || userWon) return;
 
-    if (!clickedItem.flag && cellPropertyCount("flag") === NR_OF_FLAGS) {
+    if (!clickedItem.flag && cellPropertyCount("flag") === initialNrOfFlags) {
       return;
     }
 
@@ -164,10 +164,18 @@ export default function useMinesweeper(props) {
     }
   };
 
-  let userWon =
-    cellPropertyCount("revealed") === BOARD_HEIGHT * BOARD_WIDTH - NR_OF_MINES;
+  let userWon = false;
 
-  let remainingFlags = NR_OF_FLAGS - cellPropertyCount("flag");
+  if (
+    !gameOver &&
+    cellPropertyCount("revealed") !== 0 &&
+    cellPropertyCount("revealed") ===
+      initialBoardHeight * initialBoardWidth - initialNrOfMines
+  ) {
+    userWon = true;
+  }
+
+  let remainingFlags = initialNrOfFlags - cellPropertyCount("flag");
 
   return {
     gameBoard,

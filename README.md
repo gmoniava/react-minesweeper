@@ -1,1 +1,1 @@
-Minesweeper game implemented in react.
+Minesweeper game. Game logic is implemented using custom hook (useMinesweeper).

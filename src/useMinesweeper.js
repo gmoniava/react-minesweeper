@@ -133,11 +133,13 @@ export default function useMinesweeper({
   let handleRightClick = (row, col) => {
     let clickedItem = gameBoard[row][col];
 
-    if (clickedItem.revealed || gameOver || userWon) return;
-
-    if (!clickedItem.flag && cellPropertyCount("flag") === initialNrOfFlags) {
+    if (
+      clickedItem.revealed ||
+      gameOver ||
+      userWon ||
+      (!clickedItem.flag && cellPropertyCount("flag") === initialNrOfFlags)
+    )
       return;
-    }
 
     setGameBoard((ps) => {
       ps[row][col].flag = !ps[row][col].flag;
@@ -165,22 +167,19 @@ export default function useMinesweeper({
   };
 
   let userWon = false;
-
+  let countRevealed = cellPropertyCount("revealed");
   if (
     !gameOver &&
-    cellPropertyCount("revealed") !== 0 &&
-    cellPropertyCount("revealed") ===
-      initialBoardHeight * initialBoardWidth - initialNrOfMines
+    countRevealed !== 0 &&
+    countRevealed === initialBoardHeight * initialBoardWidth - initialNrOfMines
   ) {
     userWon = true;
   }
 
-  let remainingFlags = initialNrOfFlags - cellPropertyCount("flag");
-
   return {
     gameBoard,
     gameOver,
-    remainingFlags,
+    remainingFlags: initialNrOfFlags - cellPropertyCount("flag"),
     userWon,
     handleLeftClick,
     handleRightClick,

@@ -1,3 +1,5 @@
 ## Minesweeper
 
-Game minesweeper. Game logic is implemented using a custom hook (useMinesweeper).
+Minesweeper game implemented as custom hook.
+
+

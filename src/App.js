@@ -8,7 +8,7 @@ import { CELL_TYPES } from "./useMinesweeper";
 export default function App() {
   let {
     gameBoard,
-    gameOver,
+    userLost,
     remainingFlags,
     userWon,
     handleLeftClick,
@@ -44,7 +44,7 @@ export default function App() {
                       border: cell.revealed ? "none" : "",
                       padding: 0,
                     }}
-                    disabled={gameOver || userWon}
+                    disabled={userLost || userWon}
                     onContextMenu={(e) => {
                       e.preventDefault();
                       handleRightClick(row, col);
@@ -60,7 +60,7 @@ export default function App() {
         })}
       </div>
       {userWon && <div style={{ color: "green" }}> You won </div>}
-      {gameOver && <h3 style={{ color: "red" }}> You lost </h3>}
+      {userLost && <h3 style={{ color: "red" }}> You lost </h3>}
     </div>
   );
 }

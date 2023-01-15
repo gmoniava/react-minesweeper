@@ -119,7 +119,7 @@ export default function useMinesweeper({
   let [gameBoard, setGameBoard] = useImmer(() =>
     initializeGameBoard(initialBoardWidth, initialBoardHeight)
   );
-  let [gameOver, setGameOver] = React.useState(false);
+  let [userLost, setUserLost] = React.useState(false);
 
   let cellPropertyCount = (propName) => {
     let count = 0;
@@ -135,7 +135,7 @@ export default function useMinesweeper({
 
     if (
       clickedItem.revealed ||
-      gameOver ||
+      userLost ||
       userWon ||
       (!clickedItem.flag && cellPropertyCount("flag") === initialNrOfFlags)
     )
@@ -158,7 +158,7 @@ export default function useMinesweeper({
       setGameBoard((ps) => {
         ps[row][col].revealed = true;
       });
-      setGameOver(true);
+      setUserLost(true);
     } else if (clickedItem.type === CELL_TYPES.NUMBER) {
       setGameBoard((ps) => {
         ps[row][col].revealed = true;
@@ -169,7 +169,7 @@ export default function useMinesweeper({
   let userWon = false;
   let countRevealed = cellPropertyCount("revealed");
   if (
-    !gameOver &&
+    !userLost &&
     countRevealed !== 0 &&
     countRevealed === initialBoardHeight * initialBoardWidth - initialNrOfMines
   ) {
@@ -178,7 +178,7 @@ export default function useMinesweeper({
 
   return {
     gameBoard,
-    gameOver,
+    userLost,
     remainingFlags: initialNrOfFlags - cellPropertyCount("flag"),
     userWon,
     handleLeftClick,

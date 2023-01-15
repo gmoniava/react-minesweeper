@@ -1,5 +1,4 @@
 ## Minesweeper
 
-Minesweeper game implemented as custom hook.
-
+Game minesweeper implemented using a custom hook.
 

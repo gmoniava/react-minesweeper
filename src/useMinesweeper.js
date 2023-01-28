@@ -36,6 +36,7 @@ export default function useMinesweeper({
   initialNrOfFlags = 10,
   initialNrOfMines = 10,
 } = {}) {
+  // Just gets neighbors of some cell on a given board.
   let getCellNeighbors = (row, col, board) => {
     let neighborOffsets = [
       [0, 1],
@@ -57,8 +58,10 @@ export default function useMinesweeper({
       .filter(([row, col]) => isCellWithinBounds(row, col));
   };
 
-  let initializeGameBoard = (width, height) => {
-    let createBoardWithEmptyCells = () => {
+  // Sets up the game board, like randomly putting mines on the board,
+  // assigning numbers to cells around mines, etc.
+  let setupGameBoard = (width, height) => {
+    let createEmptyBoard = () => {
       let board = [];
       for (let row = 0; row < height; row++) {
         board[row] = [];
@@ -86,7 +89,7 @@ export default function useMinesweeper({
       return mineCoordinates;
     };
 
-    let putNumbersAroundMines = (board, minesCoordinates) => {
+    let insertNumbersAroundMines = (board, minesCoordinates) => {
       for (let [row, col] of minesCoordinates) {
         getCellNeighbors(row, col, board).forEach(([nrow, ncol]) => {
           if (board[nrow][ncol].type !== CELL_TYPES.MINE) {
@@ -97,18 +100,19 @@ export default function useMinesweeper({
       }
     };
 
-    let board = createBoardWithEmptyCells();
+    let board = createEmptyBoard();
     let minesCoordinates = insertMinesOnBoard(board, initialNrOfMines);
-    putNumbersAroundMines(board, minesCoordinates);
+    insertNumbersAroundMines(board, minesCoordinates);
     return board;
   };
 
-  let reveal = (row, col, board) => {
+  // Reveals empty cell. Recursively reveals neighbor empty cells too.
+  let revealEmptyCell = (row, col, board) => {
     board[row][col].revealed = true;
     getCellNeighbors(row, col, board).forEach(([nrow, ncol]) => {
       if (!board[nrow][ncol].revealed && !board[nrow][ncol].flag) {
         if (board[nrow][ncol].type === CELL_TYPES.EMPTY) {
-          reveal(nrow, ncol, board);
+          revealEmptyCell(nrow, ncol, board);
         } else if (board[nrow][ncol].type === CELL_TYPES.NUMBER) {
           board[nrow][ncol].revealed = true;
         }
@@ -117,8 +121,9 @@ export default function useMinesweeper({
   };
 
   let [gameBoard, setGameBoard] = useImmer(() =>
-    initializeGameBoard(initialBoardWidth, initialBoardHeight)
+    setupGameBoard(initialBoardWidth, initialBoardHeight)
   );
+
   let [userLost, setUserLost] = React.useState(false);
 
   let cellPropertyCount = (propName) => {
@@ -130,6 +135,7 @@ export default function useMinesweeper({
     return count;
   };
 
+  // Handles right click, basically for setting/removing the flags.
   let handleRightClick = (row, col) => {
     let clickedItem = gameBoard[row][col];
 
@@ -145,6 +151,9 @@ export default function useMinesweeper({
       ps[row][col].flag = !ps[row][col].flag;
     });
   };
+
+  // Handles left click. Performs different operations depending on what kind
+  // of cell use clicked, e.g. if user clicked mine game over.
   let handleLeftClick = (row, col) => {
     let clickedItem = gameBoard[row][col];
 
@@ -152,7 +161,7 @@ export default function useMinesweeper({
 
     if (clickedItem.type === CELL_TYPES.EMPTY) {
       setGameBoard((ps) => {
-        reveal(row, col, ps);
+        revealEmptyCell(row, col, ps);
       });
     } else if (clickedItem.type === CELL_TYPES.MINE) {
       setGameBoard((ps) => {

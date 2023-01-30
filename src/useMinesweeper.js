@@ -9,11 +9,11 @@ const CELL_TYPES = {
 };
 
 export const RENDER_VALUES = {
-  NOT_REVEALED: 1,
-  FLAG: 2,
-  MINE: 2,
-  NUMBER: 3,
-  EMPTY: 4,
+  EMPTY: 0,
+  MINE: 1,
+  NUMBER: 2,
+  NOT_REVEALED: 3,
+  FLAG: 4,
 };
 
 let uniqueNumbers = (howMany, minInclusive, maxInclusive) => {
@@ -86,9 +86,7 @@ export default function useMinesweeper({
             getRenderValue: function () {
               if (this.flag) return RENDER_VALUES.FLAG;
               if (!this.revealed) return RENDER_VALUES.NOT_REVEALED;
-              if (this.type === CELL_TYPES.MINE) return RENDER_VALUES.MINE;
-              if (this.type === CELL_TYPES.NUMBER) return RENDER_VALUES.NUMBER;
-              if (this.type === CELL_TYPES.EMPTY) return RENDER_VALUES.EMPTY;
+              return this.type;
             },
           };
         }

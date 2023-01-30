@@ -1,7 +1,7 @@
 import React from "react";
 import useMinesweeper from "./useMinesweeper";
 import { FlagOutlined, AlertOutlined } from "@ant-design/icons";
-import { CELL_TYPES } from "./useMinesweeper";
+import { RENDER_VALUES } from "./useMinesweeper";
 
 // Minesweeper game
 
@@ -25,14 +25,21 @@ export default function App() {
               {rowItems.map((cell, col) => {
                 let cellContent = "";
 
-                if (cell.flag) {
-                  cellContent = <FlagOutlined />;
-                } else if (cell.revealed) {
-                  if (cell.type === CELL_TYPES.MINE) {
+                switch (cell.getRenderValue()) {
+                  case RENDER_VALUES.NOT_REVEALED:
+                  case RENDER_VALUES.EMPTY:
+                    cellContent = "";
+                    break;
+                  case RENDER_VALUES.MINE:
                     cellContent = <AlertOutlined style={{ color: "red" }} />;
-                  } else if (cell.type === CELL_TYPES.NUMBER) {
+                    break;
+                  case RENDER_VALUES.NUMBER:
                     cellContent = cell.value;
-                  }
+                    break;
+                  case RENDER_VALUES.FLAG:
+                    cellContent = <FlagOutlined />;
+                    break;
+                  default:
                 }
 
                 return (

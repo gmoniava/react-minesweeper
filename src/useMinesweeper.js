@@ -2,10 +2,18 @@ import React from "react";
 import { useImmer } from "use-immer";
 import { v4 as uuidv4 } from "uuid";
 
-export const CELL_TYPES = {
+const CELL_TYPES = {
   EMPTY: 0,
   MINE: 1,
   NUMBER: 2,
+};
+
+export const RENDER_VALUES = {
+  NOT_REVEALED: 1,
+  FLAG: 2,
+  MINE: 2,
+  NUMBER: 3,
+  EMPTY: 4,
 };
 
 let uniqueNumbers = (howMany, minInclusive, maxInclusive) => {
@@ -72,6 +80,16 @@ export default function useMinesweeper({
             flag: false,
             type: CELL_TYPES.EMPTY,
             key: uuidv4(),
+
+            // Helper function to provide user with easier means to determine what to render as a given cell's content.
+            // Without this function user would have to read different properties of the cell to determine what to render (similarly to this function).
+            getRenderValue: function () {
+              if (this.flag) return RENDER_VALUES.FLAG;
+              if (!this.revealed) return RENDER_VALUES.NOT_REVEALED;
+              if (this.type === CELL_TYPES.MINE) return RENDER_VALUES.MINE;
+              if (this.type === CELL_TYPES.NUMBER) return RENDER_VALUES.NUMBER;
+              if (this.type === CELL_TYPES.EMPTY) return RENDER_VALUES.EMPTY;
+            },
           };
         }
       }
